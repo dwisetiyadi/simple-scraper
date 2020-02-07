@@ -1,0 +1,24 @@
+{{#if error}}
+<div class="card text-white bg-danger mb-3">
+  <div class="card-body">
+    <p class="card-text">{{ error }}</p>
+  </div>
+</div>
+{{/if}}
+
+{{#if success}}
+<div class="card text-white bg-success mb-3">
+  <div class="card-body">
+    <p class="card-text">{{ success.title }} data has been submited, <a href="/item/{{ success.id }}">click here</a> to view it.</p>
+  </div>
+</div>
+{{/if}}
+
+<form method="POST">
+  <div class="input-group mb-3">
+    <input type="text" name="url" class="form-control" placeholder="Fabelio URL" aria-label="Fabelio URL" aria-describedby="button-addon2">
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Add</button>
+    </div>
+  </div>
+</form>

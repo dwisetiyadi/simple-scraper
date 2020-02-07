@@ -1,20 +1,17 @@
-<table class="table table-bordered">
-  <col style="width:80%">
-	<col style="width:20%">
-  <thead>
-    <tr>
-      <th scope="col"></th>
-      <th scope="col" class="text-center">Price</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{#each success}}
-    <tr>
-      <td><a href="/item/{{ this.id }}">{{ this.title }}</a></td>
-      <td>
-        <span class="pull-right">{{ this.price.currency }} {{#priceFormat this.price.amount}}{{/priceFormat}}</span class="pull-right">
-      </td>
-    </tr>
-    {{/each}}
-  </tbody>
-</table>
+<div class="row">
+  {{#each success}}
+  <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
+    <a href="/item/{{ this.id }}" class="text-body">
+      <div class="card text-white bg-secondary">
+        <img src="{{ this.thumb }}" class="card-img-top" alt="{{ this.title }}">
+        <div class="card-body">
+          <p class="card-text">
+            {{ this.title }}<br />
+            <strong>{{ this.price.currency }} {{#priceFormat this.price.amount}}{{/priceFormat}}</strong>
+          </p>
+        </div>
+      </div>
+    </a>
+  </div>
+  {{/each}}
+</div>

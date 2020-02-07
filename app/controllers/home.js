@@ -29,40 +29,56 @@ class Home {
       if (!validFabelio) htmlVar = { ...htmlVar, error: 'Its not Fabelio' };
         
       if (validUrl && validFabelio) {
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        await page.goto(req.payload.url, {waitUntil: 'networkidle0'});
-        await page.waitForSelector('.fotorama__stage__shaft.fotorama__grab');
-        const html = await page.content();
-        const $ = cheerio.load(html);
+        try {
+          const browser = await puppeteer.launch();
+          const page = await browser.newPage();
+          await page.goto(req.payload.url, {waitUntil: 'networkidle0'});
+          await page.waitForSelector('.fotorama__stage__shaft.fotorama__grab');
+          const html = await page.content();
+          const $ = cheerio.load(html);
 
-        const objItemSpec = $('ul.prod-dimension-list').toArray().map((v) => $(v).html().trim()).join("\n");
+          const objItemSpec = $('ul.prod-dimension-list').toArray().map((v) => $(v).html().trim()).join("\n");
 
-        console.log();
+          console.log();
 
-        const obj = {
-          id: uuid(),
-          title: $('meta[property="og:title"]').attr('content').trim(),
-          description: $('#description').html(),
-          specification: (objItemSpec !== '') ? `<ul>\n${objItemSpec}\n</ul>` : '',
-          image: $('.product.media .fotorama__stage__shaft.fotorama__grab img').toArray().map((v) => $(v).attr('src')),
-          price: {
-            amount: $('meta[property="product:price:amount"]').attr('content'),
-            currency: $('meta[property="product:price:currency"]').attr('content'),
-          },
-        };
+          let obj = {
+            id: uuid(),
+            title: $('meta[property="og:title"]').attr('content').trim(),
+            description: $('#description').html(),
+            specification: (objItemSpec !== '') ? `<ul>\n${objItemSpec}\n</ul>` : '',
+            image: $('.product.media .fotorama__stage__shaft.fotorama__grab img').toArray().map((v) => $(v).attr('src')),
+            // thumb: this.image[0],
+            price: {
+              amount: $('[data-price-type="finalPrice"]').attr('data-price-amount'),
+              currency: $('meta[property="product:price:currency"]').attr('content'),
+            },
+          };
+          
+          if (!obj.title) {
+            htmlVar = { ...htmlVar, error: 'Please input Product Detail URL.' };
+          }
 
-        const data = JSON.parse(fs.readFileSync('data.json'));
-        const find = data.find((v) => v.title === obj.title);
-        if (find) htmlVar = { ...htmlVar, success: find };
+          if (obj.title) {
+            obj = {
+              ...obj,
+              thumb: obj.image[0],
+            };
+            const data = JSON.parse(fs.readFileSync('data.json'));
+            const find = data.find((v) => v.title === obj.title);
+            if (find) htmlVar = { ...htmlVar, success: find };
+    
+            if (!find) {
+              const newData = JSON.stringify([ ...data, obj ]);
+              fs.writeFileSync('data.json', newData);
+              htmlVar = { ...htmlVar, success: obj };
+            }
+          }
 
-        if (!find) {
-          const newData = JSON.stringify([ ...data, obj ]);
-          fs.writeFileSync('data.json', newData);
-          htmlVar = { ...htmlVar, success: obj };
+          await browser.close();
+        } catch (error) {
+          console.log(error);
+          htmlVar = { ...htmlVar, error: error.toString() };
         }
-
-        await browser.close();
       }
     }
 

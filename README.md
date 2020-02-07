@@ -2,10 +2,11 @@
 
 How to run:
 
-1. Git clone
-2. npm install
-3. npm start
-4. open http://localhost:3000 on your browser
+1. Install NodeJS latest stable
+2. Git clone
+3. npm install
+4. npm start
+5. open http://localhost:3000 on your browser
 
 You also can run this commands
 1. npm stop
